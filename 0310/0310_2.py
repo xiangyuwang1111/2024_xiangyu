@@ -12,7 +12,8 @@ students=[{'國文': 90, '數學': 88, '英文': 61},
 import csv
 def save_file(filename:str,data:list[dict]):
     '''
-    可以在這邊說明 數標移到function會出現說明
+    可以在這邊說明 
+    數標移到function會出現說明
     '''
     with open(csvname,mode='w',encoding='utf-8',newline='') as csvfile:
         writer=csv.DictWriter(csvfile,fieldnames=['國文','英文','數學'])
