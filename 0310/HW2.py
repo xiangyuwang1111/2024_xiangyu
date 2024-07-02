@@ -30,4 +30,4 @@ with open('names.txt', encoding='utf-8') as namesfile:
         p.suggestion=get_BMI_suggestion(p.bmi)
         people.append(p)
     for person in people:
-        print(f'姓名: {person.name}, 身高: {person.height}, 體重: {person.weight}, BMI: {person.bmi:.2f}, 建議: {person.suggestion}')
+        print(f'姓名: {person.name:>3}, 身高: {person.height:>3}cm, 體重: {person.weight:>3}kg, BMI: {person.bmi:>5.2f}, 建議: {person.suggestion:>4}')
