@@ -27,18 +27,24 @@ if web.ok:
 else:
     print('Downald failed')
 
+#==========================================
 csv_str:str=web.text
 csv_file=io.StringIO(csv_str)
 dict_reader=csv.DictReader(csv_file)
 csv_data=list(dict_reader)
-
 csv_stu=Student.model_validate(csv_data)
+json_str=csv_stu.model_dump_json()
+#==========================================
 
-with open('new_student.csv', mode='w', encoding='utf-8', newline='') as student_file:
-    dict_writer=csv.DictWriter(student_file, fieldnames=list(Scores.model_fields.keys()))
-    dict_writer.writeheader()
+#create csv file
+with open('new_student.csv', mode='w', encoding='utf-8', newline='') as student_csv_file:
+    dict_writer=csv.DictWriter(student_csv_file, fieldnames=list(Scores.model_fields.keys()))
+    dict_writer.writeheader()#寫入欄位名稱
     for score in csv_stu:
-        dict_writer.writerow(score.model_dump())
-    print('new_student.csv is created.')
+        dict_writer.writerow(score.model_dump())#model_dump()將資料轉為python的資料結構，以寫入檔案
+    print('new_students.csv is created.')
 
-
+#create json file
+with open('new_students.json', mode='w', encoding='utf-8') as student_json_file:
+    student_json_file.write(json_str)
+    print('new_students.json is created.')
