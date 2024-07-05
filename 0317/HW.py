@@ -18,6 +18,7 @@ class Scores(BaseModel):
 
 class Student(RootModel):
     root:list[Scores]
+    
     #對Student對象進行迭代操作時，例如在 for 迴圈中使用它，__iter__ 方法會被呼叫並返回self.root的迭代器。
     def __iter__(self):
         return iter(self.root)
@@ -38,6 +39,7 @@ def main():
         print('Downald successfully')
     else:
         print('Downald failed')
+    
     #==========================================
     csv_str:str=web.text
     csv_file=io.StringIO(csv_str)
@@ -48,6 +50,7 @@ def main():
     csv_stu.add_averages()
     json_str=csv_stu.model_dump_json()
     #==========================================
+    
     #create csv file
     with open('new_student.csv', mode='w', encoding='utf-8', newline='') as student_csv_file:
         dict_writer=csv.DictWriter(student_csv_file, fieldnames=list(Scores.model_fields.keys()))
@@ -60,6 +63,7 @@ def main():
     with open('new_students.json', mode='w', encoding='utf-8') as student_json_file:
         student_json_file.write(json_str)
         print('new_students.json is created.')
+
     #create panda
     student_pandas_score=pandas.DataFrame(data=csv_stu.model_dump())
     print('pandas_score: ')
