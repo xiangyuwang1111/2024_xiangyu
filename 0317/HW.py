@@ -2,6 +2,7 @@ from pydantic import BaseModel,Field,RootModel
 import requests
 import io
 import csv
+import pandas
 
 class Scores(BaseModel):
     姓名:str
@@ -10,6 +11,10 @@ class Scores(BaseModel):
     數學:int = Field(alias='科目3')
     地理:int = Field(alias='科目4')
     歷史:int = Field(alias='科目5')
+    平均:float=0
+
+    def average_calculate(self):
+        self.平均=(self.國文+self.英文+self.數學+self.地理+self.歷史)/5
 
 class Student(RootModel):
     root:list[Scores]
@@ -21,31 +26,43 @@ class Student(RootModel):
     def __getitem__(self, item):
         return self.root[item]
     
-csv_url='https://raw.githubusercontent.com/roberthsu2003/python/master/pydantic/%E5%AD%B8%E7%94%9F%E5%88%86%E6%95%B8.csv'
-web=requests.get(url=csv_url)
-if web.ok:
-    print('Downald successfully')
-else:
-    print('Downald failed')
+    def add_averages(self):
+        for score in self.root:
+            score.average_calculate()
+    
 
-#==========================================
-csv_str:str=web.text
-csv_file=io.StringIO(csv_str)
-dict_reader=csv.DictReader(csv_file)
-csv_data=list(dict_reader)
-csv_stu=Student.model_validate(csv_data)
-json_str=csv_stu.model_dump_json()
-#==========================================
+def main():
+    csv_url='https://raw.githubusercontent.com/roberthsu2003/python/master/pydantic/%E5%AD%B8%E7%94%9F%E5%88%86%E6%95%B8.csv'
+    web=requests.get(url=csv_url)
+    if web.ok:
+        print('Downald successfully')
+    else:
+        print('Downald failed')
+    #==========================================
+    csv_str:str=web.text
+    csv_file=io.StringIO(csv_str)
+    dict_reader=csv.DictReader(csv_file)
+    csv_data=list(dict_reader)
+    csv_stu=Student.model_validate(csv_data)
+    #print(type(csv_stu))
+    csv_stu.add_averages()
+    json_str=csv_stu.model_dump_json()
+    #==========================================
+    #create csv file
+    with open('new_student.csv', mode='w', encoding='utf-8', newline='') as student_csv_file:
+        dict_writer=csv.DictWriter(student_csv_file, fieldnames=list(Scores.model_fields.keys()))
+        dict_writer.writeheader()#寫入欄位名稱
+        for score in csv_stu:
+            dict_writer.writerow(score.model_dump())#model_dump()將資料轉為python的資料結構，以寫入檔案
+        print('new_students.csv is created.')
 
-#create csv file
-with open('new_student.csv', mode='w', encoding='utf-8', newline='') as student_csv_file:
-    dict_writer=csv.DictWriter(student_csv_file, fieldnames=list(Scores.model_fields.keys()))
-    dict_writer.writeheader()#寫入欄位名稱
-    for score in csv_stu:
-        dict_writer.writerow(score.model_dump())#model_dump()將資料轉為python的資料結構，以寫入檔案
-    print('new_students.csv is created.')
+    #create json file
+    with open('new_students.json', mode='w', encoding='utf-8') as student_json_file:
+        student_json_file.write(json_str)
+        print('new_students.json is created.')
+    #create panda
+    student_pandas_score=pandas.DataFrame(data=csv_stu.model_dump())
+    print('pandas_score: ')
+    print(student_pandas_score)
 
-#create json file
-with open('new_students.json', mode='w', encoding='utf-8') as student_json_file:
-    student_json_file.write(json_str)
-    print('new_students.json is created.')
+main()
