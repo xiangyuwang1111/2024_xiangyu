@@ -13,10 +13,11 @@ class Scores(BaseModel):
 
 class Student(RootModel):
     root:list[Scores]
-
+    #對Student對象進行迭代操作時，例如在 for 迴圈中使用它，__iter__ 方法會被呼叫並返回self.root的迭代器。
     def __iter__(self):
         return iter(self.root)
-
+    
+    #可以通過索引訪問 Student 對象中的 Scores 對象
     def __getitem__(self, item):
         return self.root[item]
     
