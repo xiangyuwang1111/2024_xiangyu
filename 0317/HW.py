@@ -57,12 +57,12 @@ def main():
         dict_writer.writeheader()#寫入欄位名稱
         for score in csv_stu:
             dict_writer.writerow(score.model_dump())#model_dump()將資料轉為python的資料結構，以寫入檔案
-        print('new_students.csv is created.')
+    print('new_students.csv is created.')
 
     #create json file
     with open('new_students.json', mode='w', encoding='utf-8') as student_json_file:
         student_json_file.write(json_str)
-        print('new_students.json is created.')
+    print('new_students.json is created.')
 
     #create panda
     student_pandas_score=pandas.DataFrame(data=csv_stu.model_dump())
